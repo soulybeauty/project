@@ -10,7 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 id_to_cls_path = os.path.join(current_dir, "id_to_cls.txt") 
 bert_fc_classifier_path = os.path.join(current_dir, "bert_fc_classifier") 
 xgb_model_path = os.path.join(current_dir, "xgb_model.json") 
-finetuned_multilingual_BERT_epoch_10.model_path = os.path.join(current_dir, "path/to/finetuned_model") 
+finetuned_multilingual_BERT_epoch_10_model_path = os.path.join(current_dir, "finetuned_multilingual_BERT_epoch_10.model") 
 
 with open(id_to_cls_path, "r") as fp:
     # Load the dictionary from the file
@@ -30,7 +30,7 @@ from transformers import BertTokenizer, BertForSequenceClassification
 
 # Load the fine-tuned model
 model = BertForSequenceClassification.from_pretrained('bert-base-multilingual-uncased', num_labels=3)
-model.load_state_dict(torch.load(finetuned_multilingual_BERT_epoch_10, map_location=torch.device('cpu')))
+model.load_state_dict(torch.load(finetuned_multilingual_BERT_epoch_10_model_path, map_location=torch.device('cpu')))
 
 # Initialize the tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-uncased')
