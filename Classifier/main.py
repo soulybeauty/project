@@ -10,7 +10,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 id_to_cls_path = os.path.join(current_dir, "id_to_cls.txt") 
 bert_fc_classifier_path = os.path.join(current_dir, "bert_fc_classifier") 
 xgb_model_path = os.path.join(current_dir, "xgb_model.json") 
-finetuned_multilingual_BERT_epoch_10_model_path = os.path.join(current_dir, "finetuned_multilingual_BERT_epoch_10.model") 
+finetuned_multilingual_BERT_epoch_10_model_path = os.path.join(current_dir,"finetuned_multilingual_BERT_new_epoch_6.model")
 
 with open(id_to_cls_path, "r") as fp:
     # Load the dictionary from the file
@@ -44,9 +44,13 @@ def get_output_bert(input_text):
     # Get the model prediction
     outputs = model(input_ids)
     logits = outputs[0]
+
+    softmax = torch.nn.Softmax(dim=1)
+    probabilities = softmax(logits)[0]
     predicted_labels = torch.argmax(logits, dim=1)
 
-    return predicted_labels.item()
+
+    return predicted_labels,probabilities
 
 
 while True:
@@ -61,6 +65,8 @@ while True:
 
     model_output_dl = modelo.predict(embedding.reshape(1,768))
 
+    label,probs = get_output_bert(text)
+
     if np.max(model_output_dl) <0.6:
         print('\n Deeplearning: Hec biri')
     else:
@@ -68,5 +74,8 @@ while True:
 
     print('\n XGBoost: ',id_to_cls[str(model_output_xg[0] + 1)] )
 
-    print('\n BERT: ',id_to_cls[str(get_output_bert(text)+1)])
+    if probs[label.item()] >= 0.8:
+        print('\n BERT: ',id_to_cls[str(label+1)])
+    else: 
+        print('\n BERT: Hech bir sinife uyqun gorulmedi!')
 
