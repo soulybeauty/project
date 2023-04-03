@@ -1,4 +1,3 @@
-import tensorflow as tf
 from vectorize import text_to_vector
 import numpy as np;import json
 import xgboost as xgb
@@ -16,7 +15,6 @@ with open(id_to_cls_path, "r") as fp:
     # Load the dictionary from the file
     id_to_cls = json.load(fp)
 
-modelo = tf.keras.models.load_model(bert_fc_classifier_path)
 
 model_xgb_2 = xgb.XGBClassifier()
 model_xgb_2.load_model(xgb_model_path)
@@ -63,19 +61,13 @@ while True:
 
     model_output_xg = model_xgb_2.predict(embedding)
 
-    model_output_dl = modelo.predict(embedding.reshape(1,768))
-
     label,probs = get_output_bert(text)
 
-    if np.max(model_output_dl) <0.6:
-        print('\n Deeplearning: Hec biri')
-    else:
-        print('\n Deeplearning: ',id_to_cls [ str(np.argmax(model_output_dl) +1)] )
-
-    print('\n XGBoost: ',id_to_cls[str(model_output_xg[0] + 1)] )
 
     if probs[label.item()] >= 0.8:
-        print('\n BERT: ',id_to_cls[str(label+1)])
+        print('\n Output from BERT : ',id_to_cls[str(label+1)])
     else: 
-        print('\n BERT: Hech bir sinife uyqun gorulmedi!')
+        print('\n Output from BERT: Hech bir sinife uyqun gorulmedi!')
+
+    print('\n XGBoost: ',id_to_cls[str(model_output_xg[0] + 1)] )
 
